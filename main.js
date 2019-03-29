@@ -5,33 +5,36 @@
 // 変数や関数を外から見えなくするために（カプセル化・プライベート化）
 // 即時関数でスコープを閉じながら、関数内の処理をすぐに実行する 
 (() => {
-    // images/sprite.pngを切り取って使う際にそれぞれの笑顔のindexを指定している
-    const slotImage = [
-        0,  //7
-        1,  //さくらんぼ
-        2,  //ベル
-    ];
+    // images/sprite.pngを切り取って使う際にそれぞれの画像のindexを指定している
+    const IMAGE_TYPE = {
+        SEVEN: 0,  //7
+        CHERRY: 1,  //さくらんぼ
+        BELL: 2,  //ベル
+    };
     // images/sprite.png(スロットの画像)を切り取って使う際に
     // それぞれの絵柄のx座標を指定している。
-    const SLOT_X = [
-        0,  //7
-        670,  //さくらんぼ
-        1120,  //ベル
-    ];
+    const SLOT_X = {
+        SEVEN: 0,  //7
+        CHERRY: 670,  //さくらんぼ
+        BELL: 1120,  //ベル
+    };
+
     // images/sprite.png(グーチョキパーの画像)を切り取って使う際に
     // それぞれの手のwidth(横幅)を指定している。
-    const SLOT_WIDTH = [
-        665,    //7
-        446,    //さくらんぼ
-        443     //ベル
-    ];
+    const SLOT_WIDTH = {
+        SEVEN: 665,    //7
+        CHERRY: 446,    //さくらんぼ
+        BELL: 443     //ベル
+    };
     // images/sprite.png(グーチョキパーの画像)を切り取って使う際に
     // それぞれの手のheight(高さ)を指定している。
-    const SLOT_HEIGHT = [
-        315,  //7
-        290,  //さくらんぼ
-        290    //ベル
-    ];
+    const SLOT_HEIGHT = {
+        SEVEN: 315,  //7
+        CHERRY: 290,  //さくらんぼ
+        BELL: 290    //ベル
+    };
+    // 画像の個数の長さを定義
+    const IMAGE_INDEX_LENGTH = Object.keys(IMAGE_TYPE).length;
     const IMAGE_PATH = './images/strite.png';
     // 1秒間で60コマ（フレーム）のアニメーションを行う
     // ここの値が大きいほど手の切り替わりスピードが早くなる
@@ -42,9 +45,9 @@
     const FPS = 10;
     // loop関数内で呼び出しているdraw関数の実行をするかしないかを切り分けているフラグ
     // それぞれボタンが押された時にtrueになる。(buttonAction関数を参照)
-    let isPause = [];
-    for (let i = 0; i < slotImage.length; i++) {
-        isPause[i] = false;
+    let isPauseArray = [];
+    for (let i = 0; i < IMAGE_INDEX_LENGTH; i++) {
+        isPauseArray[i] = false;
     }
 
     // draw関数が実行されるたびに1増える(インクリメント)
@@ -54,7 +57,7 @@
     // currentFrameが30のとき: 30 % 3 => 0 => slotImage[0] => 7
     // currentFrameが31のとき: 30 % 3 => 1 => slotImage[1] => さくらんぼ
     // currentFrameが32のとき: 30 % 3 => 2 => slotImage[2] => ベル
-    let currentFrame = [];
+    let currentFrameArray = [];
 
     /**
    * 実際にアニメーションを開始させる処理
@@ -67,9 +70,9 @@
     const context3 = canvas3.getContext('2d');
 
     //まずは初期化。全部のスロットを真っ白にする関数
-    function Initialize() {
-        for (let i = 0; i < slotImage.length; i++) {
-            currentFrame[i] = 0;
+    function initialize() {
+        for (let i = 0; i < IMAGE_INDEX_LENGTH; i++) {
+            currentFrameArray[i] = 0;
         }
         context1.clearRect(0, 0, canvas1.width, canvas1.height);
         context2.clearRect(0, 0, canvas2.width, canvas2.height);
@@ -81,14 +84,14 @@
         imageObj.src = IMAGE_PATH;
         imageObj.onload = function () {
             function loop() {
-                if (!isPause[0]) {
-                    draw(canvas1, context1, imageObj, currentFrame[0]++);
+                if (!isPauseArray[0]) {
+                    draw(canvas1, context1, imageObj, currentFrameArray[0]++);
                 }
-                if (!isPause[1]) {
-                    draw(canvas2, context2, imageObj, currentFrame[1]++);
+                if (!isPauseArray[1]) {
+                    draw(canvas2, context2, imageObj, currentFrameArray[1]++);
                 }
-                if (!isPause[2]) {
-                    draw(canvas3, context3, imageObj, currentFrame[2]++);
+                if (!isPauseArray[2]) {
+                    draw(canvas3, context3, imageObj, currentFrameArray[2]++);
                 }
                 // 指定した時間が経過したらloop関数を呼び出す。
                 // 関数自身を呼び出す関数のことを再帰関数という。
@@ -117,11 +120,19 @@
         // Canvasをまっさらな状態にする。（クリアする）
         // クリアをしなかった場合、以前に描画した画像がcanvas上に残ったままになってしまう。
         context.clearRect(0, 0, canvas.width, canvas.height);
-        // 0:７ 1:さくらんぼ 2:ベル
-        const slotIndex = frame % slotImage.length;
-        const sx = SLOT_X[slotIndex];
-        const swidth = SLOT_WIDTH[slotIndex];
-        const sheight = SLOT_HEIGHT[slotIndex];
+        // IMAGE_TYPEのどの値に該当するかを取得
+        const IMAGE_TYPE_VALUE = frame % IMAGE_INDEX_LENGTH;
+        // オブジェクトの値からキーを取得
+        // indexを初期化
+        let index = 0;
+        for (let property in IMAGE_TYPE) {
+            if (IMAGE_TYPE[property] === IMAGE_TYPE_VALUE) {
+                index = property;
+            }
+        }
+        const sx = SLOT_X[index];
+        const swidth = SLOT_WIDTH[index];
+        const sheight = SLOT_HEIGHT[index];
         // 画像のx座標(sx)と指定した画像の横縦幅(swidth)(sheight)を使って、
         // スロット画像('./images/sprite.png')から特定の絵を切り取る
         context.drawImage(
@@ -141,52 +152,57 @@
     // 2回目　＝＝＞　左のスロットを止める(isPause[0]=true)
     // 3回目　＝＝＞　真ん中のスロットを止める(isPause[1]=true)
     // 4回目　＝＝＞　右のスロットを止め(isPause[2]=true)、判定を行う(judge())。ボタンのcontextをstopからRestartに変える。
-    // 5回目　＝＝＞　リロードする
-
+    const button = document.querySelector('button');
+    let startFlag = true;
     function buttonAction() {
-        const button = document.querySelector('button');
-        let buttonIndex = 0;
+        let clickCount = 0;
         button.addEventListener('click', (event) => {
-            switch (buttonIndex) {
-                case 0:
-                    button.textContent = 'stop';
-                    for (let i = 0; i < slotImage.length; i++) {
-                        isPause[i] = false;
-                    }
-                    main();
-                    buttonIndex++;
-                    break;
-                case 1:
-                    isPause[0] = true;
-                    buttonIndex++;
-                    break;
-                case 2:
-                    isPause[1] = true;
-                    buttonIndex++;
-                    break;
-                case 3:
-                    isPause[2] = true;
-                    judge(currentFrame[0], currentFrame[1], currentFrame[2]);
-                    button.textContent = 'Restart';
-                    buttonIndex++;
-                    break;
-                case 4:
-                    window.location.reload();
-                    break;
+            // 全ての　isPauseがtrueになった時、リロードする
+            const hasFinished = isPauseArray.every(_isPause => _isPause);
+            if (hasFinished) {
+                window.location.reload();
+                return;     // returnを実行すると処理をそこで終えることが出来る
+            }
+            // 1回目はstart()を呼ぶ。startFlagをfalseにする
+            if (startFlag) {
+                start(clickCount);
+                startFlag = false;
+            } else {
+                // 2回目以降はそれぞれのスロットを止める処理をする
+                stopImage(clickCount);
+                clickCount++;
             }
         });
     }
+    //ボタンのcontextをstartからstopに変える。全てのisPauseをfalseにしてmain()を呼んで全てスロットを動かす
+    function start() {
+        button.textContent = 'stop';
+        for (let i = 0; i < IMAGE_INDEX_LENGTH; i++) {
+            isPauseArray[i] = false;
+        }
+        main();
+    }
+    function stopImage(clickCount) {
+        isPauseArray[clickCount] = true;
+        // 全てのスロットを止めた時は絵柄が一致しているか判定する(judge())
+        // ボタンのテキストはRestartにする
+        if (clickCount === 2) {
+            judge(currentFrameArray[0], currentFrameArray[1], currentFrameArray[2]);
+            button.textContent = 'Restart';
+        }
+    }
     // 判定するための関数　3つ全ての絵柄が同じ時が当たり。それ以外を外れとしている。
     function judge(frame1, frame2, frame3) {
-        const slot1Index = frame1 % slotImage.length;
-        const slot2Index = frame2 % slotImage.length;
-        const slot3Index = frame3 % slotImage.length;
+        const slot1Index = frame1 % IMAGE_INDEX_LENGTH;
+        const slot2Index = frame2 % IMAGE_INDEX_LENGTH;
+        const slot3Index = frame3 % IMAGE_INDEX_LENGTH;
         if (slot1Index === slot2Index && slot1Index === slot3Index) {
             alert('当たりです！');
         } else {
             alert('残念');
         }
     }
-    Initialize();
+
+    initialize();
     buttonAction();
 })();
