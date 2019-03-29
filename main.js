@@ -18,16 +18,15 @@
         CHERRY: 670,  //さくらんぼ
         BELL: 1120,  //ベル
     };
-
-    // images/sprite.png(グーチョキパーの画像)を切り取って使う際に
-    // それぞれの手のwidth(横幅)を指定している。
+    // images/sprite.pngを切り取って使う際に
+    // それぞれの絵柄のwidth(横幅)を指定している。
     const SLOT_WIDTH = {
         SEVEN: 665,    //7
         CHERRY: 446,    //さくらんぼ
         BELL: 443     //ベル
     };
-    // images/sprite.png(グーチョキパーの画像)を切り取って使う際に
-    // それぞれの手のheight(高さ)を指定している。
+    // images/sprite.pngを切り取って使う際に
+    // それぞれの絵柄のheight(高さ)を指定している。
     const SLOT_HEIGHT = {
         SEVEN: 315,  //7
         CHERRY: 290,  //さくらんぼ
@@ -45,19 +44,17 @@
     const FPS = 10;
     // loop関数内で呼び出しているdraw関数の実行をするかしないかを切り分けているフラグ
     // それぞれボタンが押された時にtrueになる。(buttonAction関数を参照)
-    let isPauseArray = [];
-    for (let i = 0; i < IMAGE_INDEX_LENGTH; i++) {
-        isPauseArray[i] = false;
-    }
+    // 最初は全てfalseにする
+    const isPauseArray = [false, false, false];
 
     // draw関数が実行されるたびに1増える(インクリメント)
-    // currentFrameの値を剰余算演算子(%)を使い出たあまりを使うことで、
+    // currentFrameArrayの値を剰余算演算子(%)を使い出たあまりを使うことで、
     // 表示されるスロットの絵柄を決める。
     // 例:
     // currentFrameが30のとき: 30 % 3 => 0 => slotImage[0] => 7
     // currentFrameが31のとき: 30 % 3 => 1 => slotImage[1] => さくらんぼ
     // currentFrameが32のとき: 30 % 3 => 2 => slotImage[2] => ベル
-    let currentFrameArray = [];
+    const currentFrameArray = [0, 0, 0];
 
     /**
    * 実際にアニメーションを開始させる処理
@@ -69,11 +66,8 @@
     const canvas3 = document.getElementById('screen3');
     const context3 = canvas3.getContext('2d');
 
-    //まずは初期化。全部のスロットを真っ白にする関数
+    //初期化処理。全部のスロットを真っ白にする関数
     function initialize() {
-        for (let i = 0; i < IMAGE_INDEX_LENGTH; i++) {
-            currentFrameArray[i] = 0;
-        }
         context1.clearRect(0, 0, canvas1.width, canvas1.height);
         context2.clearRect(0, 0, canvas2.width, canvas2.height);
         context3.clearRect(0, 0, canvas3.width, canvas3.height);
@@ -121,12 +115,12 @@
         // クリアをしなかった場合、以前に描画した画像がcanvas上に残ったままになってしまう。
         context.clearRect(0, 0, canvas.width, canvas.height);
         // IMAGE_TYPEのどの値に該当するかを取得
-        const IMAGE_TYPE_VALUE = frame % IMAGE_INDEX_LENGTH;
+        const imageTypeValue = frame % IMAGE_INDEX_LENGTH;
         // オブジェクトの値からキーを取得
         // indexを初期化
         let index = 0;
         for (let property in IMAGE_TYPE) {
-            if (IMAGE_TYPE[property] === IMAGE_TYPE_VALUE) {
+            if (IMAGE_TYPE[property] === imageTypeValue) {
                 index = property;
             }
         }
@@ -161,7 +155,7 @@
             const hasFinished = isPauseArray.every(_isPause => _isPause);
             if (hasFinished) {
                 window.location.reload();
-                return;     // returnを実行すると処理をそこで終えることが出来る
+                return;     // returnを実行すると処理をそこで終えることが出来る。これより下の処理はやらない
             }
             // 1回目はstart()を呼ぶ。startFlagをfalseにする
             if (startFlag) {
@@ -182,11 +176,11 @@
         }
         main();
     }
-    function stopImage(clickCount) {
-        isPauseArray[clickCount] = true;
+    function stopImage(index) {
+        isPauseArray[index] = true;
         // 全てのスロットを止めた時は絵柄が一致しているか判定する(judge())
         // ボタンのテキストはRestartにする
-        if (clickCount === 2) {
+        if (isPauseArray.every(_isPause => _isPause)) {
             judge(currentFrameArray[0], currentFrameArray[1], currentFrameArray[2]);
             button.textContent = 'Restart';
         }
@@ -202,7 +196,6 @@
             alert('残念');
         }
     }
-
     initialize();
     buttonAction();
 })();
