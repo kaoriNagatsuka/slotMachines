@@ -159,7 +159,7 @@
             }
             // 1回目はstart()を呼ぶ。startFlagをfalseにする
             if (startFlag) {
-                start(clickCount);
+                start();
                 startFlag = false;
             } else {
                 // 2回目以降はそれぞれのスロットを止める処理をする
