@@ -9,14 +9,14 @@
     const IMAGE_TYPE = {
         SEVEN: 0,  //7
         CHERRY: 1,  //さくらんぼ
-        BELL: 2,  //ベル
+        BELL: 2  //ベル
     };
     // images/sprite.png(スロットの画像)を切り取って使う際に
     // それぞれの絵柄のx座標を指定している。
     const SLOT_X = {
         SEVEN: 0,  //7
         CHERRY: 670,  //さくらんぼ
-        BELL: 1120,  //ベル
+        BELL: 1120  //ベル
     };
     // images/sprite.pngを切り取って使う際に
     // それぞれの絵柄のwidth(横幅)を指定している。
@@ -41,7 +41,7 @@
     // - FPSの値が1: 1秒に1回手が切り替わる
     // - FPSの値が10: 1秒に10回手が切り替わる
     // - FPSの値が60: 1秒に60回手が切り替わる
-    const fpsArray = [10, 20, 30];
+    const FPS = 10;
     // loop関数内で呼び出しているdraw関数の実行をするかしないかを切り分けているフラグ
     // それぞれボタンが押された時にtrueになる。(buttonAction関数を参照)
     // 最初は全てfalseにする
@@ -72,45 +72,34 @@
         context2.clearRect(0, 0, canvas2.width, canvas2.height);
         context3.clearRect(0, 0, canvas3.width, canvas3.height);
     }
+
     function main() {
         const imageObj = new Image();
 
         imageObj.src = IMAGE_PATH;
         imageObj.onload = function () {
             function loop() {
-                loops(isPauseArray[0], canvas1, context1, imageObj, currentFrameArray[0]++, fpsArray[0]);
-                loops(isPauseArray[1], canvas2, context2, imageObj, currentFrameArray[1]++, fpsArray[1]);
-                loops(isPauseArray[2], canvas3, context3, imageObj, currentFrameArray[2]++, fpsArray[2]);
-                // if (!isPauseArray[0]) {
-                //     draw(canvas1, context1, imageObj, currentFrameArray[0]++);
-                // }
-                // if (!isPauseArray[1]) {
-                //     draw(canvas2, context2, imageObj, currentFrameArray[1]++);
-                // } 
-                // if (!isPauseArray[2]) {
-                //     draw(canvas3, context3, imageObj, currentFrameArray[2]++);
-                // }
+                if (!isPauseArray[0]) {
+                    draw(canvas1, context1, imageObj, currentFrameArray[0]++);
+                }
+                if (!isPauseArray[1]) {
+                    draw(canvas2, context2, imageObj, currentFrameArray[1]++);
+                } 
+                if (!isPauseArray[2]) {
+                    draw(canvas3, context3, imageObj, currentFrameArray[2]++);
+                }
                 // 指定した時間が経過したらloop関数を呼び出す。
                 // 関数自身を呼び出す関数のことを再帰関数という。
-                //
+                
                 // 例: FPSの値に応じてloop関数が実行される時間間隔が変わる
                 // FPSが60 => 1000/60 => 16.666 => 0.016秒後にloop関数を実行 => 0.016秒毎に1回手が切り替わる
                 // FPSが10 => 1000/10 => 100 => 0.1秒後にloop関数を実行 => 0.1秒毎に1回手が切り替わる
                 // FPSが1 => 1000/1 => 1000 => 1秒後にloop関数を実行 => 1秒毎に1回手が切り替わる
 
-                // setTimeout(loop, 1000 / FPS);
-                // console.log('FPS', FPS);
+                setTimeout(loop, 1000 / FPS);
             }
              loop();
         };
-    }
-    function loops(isPause, canvas, context, imageObject, frame, fps) {
-        // main()内のloop関数をこちらに移動させる
-        // 変更事項：それぞれのスロットの絵柄が変わる速度を統一しない（fpsArray = [10, 20, 30]）
-        if(!isPause) {
-            draw(canvas, context, imageObject, frame++);
-        }
-        setTimeout(loops, 1000/fps);
     }
     /**
    * スロットの絵柄の画像('./images/sprite.png')から特定の手の形を切り取る
@@ -138,17 +127,17 @@
                 index = property;
             }
         }
-        const sx = SLOT_X[index];
-        const swidth = SLOT_WIDTH[index];
-        const sheight = SLOT_HEIGHT[index];
+        const sX = SLOT_X[index];
+        const sWidth = SLOT_WIDTH[index];
+        const sHeight = SLOT_HEIGHT[index];
         // 画像のx座標(sx)と指定した画像の横縦幅(swidth)(sheight)を使って、
         // スロット画像('./images/sprite.png')から特定の絵を切り取る
         context.drawImage(
             imageObject,
-            sx,
+            sX,
             30,
-            swidth,
-            sheight,
+            sWidth,
+            sHeight,
             0,
             0,
             canvas.width,
