@@ -84,13 +84,13 @@
                 }
                 if (!isPauseArray[1]) {
                     draw(canvas2, context2, imageObj, currentFrameArray[1]++);
-                } 
+                }
                 if (!isPauseArray[2]) {
                     draw(canvas3, context3, imageObj, currentFrameArray[2]++);
                 }
                 // 指定した時間が経過したらloop関数を呼び出す。
                 // 関数自身を呼び出す関数のことを再帰関数という。
-                
+
                 // 例: FPSの値に応じてloop関数が実行される時間間隔が変わる
                 // FPSが60 => 1000/60 => 16.666 => 0.016秒後にloop関数を実行 => 0.016秒毎に1回手が切り替わる
                 // FPSが10 => 1000/10 => 100 => 0.1秒後にloop関数を実行 => 0.1秒毎に1回手が切り替わる
@@ -98,7 +98,7 @@
 
                 setTimeout(loop, 1000 / FPS);
             }
-             loop();
+            loop();
         };
     }
     /**
